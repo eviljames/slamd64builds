@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.  Line
+# up the first '|' above the ':' following the base package name, and the '|'
+# on the right side marks the last column you can put a character in.  You must
+# make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':'.
+
+                      |-----handy-ruler--------------------------------------|
+avant-window-navigator: Avant Window Navigator
+avant-window-navigator: 
+avant-window-navigator: AWN is a dock-like navigator is a dock-like
+avant-window-navigator: navigation bar for the linux desktop that positions
+avant-window-navigator: itself at the bottom of the screen.  It can be used
+avant-window-navigator: to keep track of open windows and behaves like a
+avant-window-navigator: normal window list.
+avant-window-navigator:
+avant-window-navigator: This build is not gconf-aware and is built desktop
+avant-window-navigator: agnostic.
+avant-window-navigator: Packages by eviljames
