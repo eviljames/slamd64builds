@@ -1,0 +1,2 @@
+qjackctl: QjackCtl is a simple Qt application to control the JACK sound
+qjackctl: server daemon, specific for the Linux Audio Desktop infrastructure.
