@@ -35,7 +35,7 @@ rm -rf $PKGNAM-$VERSION
 tar xjvf $CWD/$PKGNAM-$VERSION.tar.bz2
 
 cd $PKGNAM-$VERSION
-chown -Rv root:root .
+pkghelpers_permissions
 
 # Configure...
 LDFLAGS="-L/usr/lib64" \
@@ -50,19 +50,9 @@ make -j12 || exit 1
 # Install...
 make DESTDIR=$PKG install
 
-# Prepare package.. Move usr/share/pkgconfig to usr/lib
+# Prepare package..
 
-( cd $PKG
-  find . | xargs file | grep "executable" | grep ELF | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
-  find . | xargs file | grep "shared object" | grep ELF | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null
-)
-
-if [ -d $PKG/usr/man ]; then
-  ( cd $PKG/usr/man
-    find . -type f -exec gzip -9 {} \;
-    for i in $(find . -type l) ; do ln -s $(readlink $i).gz $i.gz ; rm $i ; done
-  )
-fi
+pkghelpers_fixup
 
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
 cp -a AUTHORS COPYING ChangeLog INSTALL NEWS README VERSION \
@@ -76,5 +66,4 @@ fi
 
 # Make the package...
 cd $PKG
-pkghelpers_fixup
 pkghelpers_makepkg
