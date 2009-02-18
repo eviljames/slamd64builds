@@ -1,0 +1,11 @@
+digiKam - a great photo tool.
+
+Requires some stuff, though.  This build wants:
+exiv2
+libkexiv (requires exiv2)
+jasper
+libkipi
+kipi-plugins
+libkdcraw
+
+Build scripts for all of these are available in this repo.
