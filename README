@@ -1,5 +1,10 @@
 This is where eviljames in #slackware/#slamd64 on freenode puts his custom packs.  Use at your OWN RISK NO WARRANTY ETC.
 
+Right now, none of these packages are any good.  I'll change this readme when I have updated
+each script to meet the template that I have since made.
+
+In short, EXPERIMENTAL!
+
 You know the drill.
 
 You should be able to simply download script / slack-desc file and run it at the command line.  These scripts will download the source and build from it.
