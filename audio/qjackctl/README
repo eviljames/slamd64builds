@@ -3,3 +3,5 @@ QjackCtl
 Requires jack-audio-connection-kit, qt4.  Both I acquired from SBo, but
 build scripts for either might be forthcoming, depending on how ambitious I
 feel this week.
+
+The SBo package for qt4 isn't quite perfect for slamd64, so a new one should be in my libraries/ shortly.
