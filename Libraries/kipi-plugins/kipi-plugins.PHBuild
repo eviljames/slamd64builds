@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Slamd64 build script for kipi-plugins using pkg hlpers
+# Slamd64 build script for jasper using pkg hlpers
 #Copyright (c) 2009, eviljames <storgeek@gmail.com>
 #
 #Permission to use, copy, modify, and/or distribute this software for any
@@ -15,65 +15,63 @@
 #ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 #OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+
 PRGNAM=kipi-plugins
 VERSION=0.1.5
-BUILD=1jp
+BUILD=2jp
 URI=http://downloads.sourceforge.net/kipi/kipi-plugins-0.1.5.tar.bz2
 
+# Set up build environment
 . /etc/pkghelpers
 pkghelpers_env
 
-# Download the package if not available.
-if [ ! -f $PKGNAM-$VERSION.tar.bz2 ] ; then 
-  wget $URI 
+# Download the package if not available
+if [ ! -f $PKGNAM-$VERSION.tar.bz2 ] ; then
+  wget -c $URI || exit 1
 fi
 
 rm -rf $PKG
 mkdir -p $PKG
 cd $TMP
 rm -rf $PKGNAM-$VERSION
-tar xjvf $CWD/$PKGNAM-$VERSION.tar.bz2
+tar xjvf $CWD/$PKGNAM-$VERSION.tar.bz2 || exit 1
 
 cd $PKGNAM-$VERSION
-chown -Rv root:root .
+pkghelpers_permissions
 
-# Configure...
-UIC_PATH=/usr/lib64/qt/bin/uic \
-CFLAGS="$SLKCFLAGS" ./configure --prefix=/usr --libdir=/usr/lib64 \
-  --sysconfdir=/etc --localstatedir=/var --mandir=/usr/man --program-prefix="" \
-  --program-suffix="" --with-docdir=/usr/doc/$PRGNAM-$VERSION \
-  --build=$ARCH-slackware-linux --host=$ARCH-slackware-linux
+# Configure... might have to use the next line...
+# UIC_PATH=/usr/lib64/qt/bin/uic \
+LDFLAGS="-L/lib64 -L/usr/lib64" \
+CFLAGS="$SLKCFLAGS" \
+./configure --prefix=/usr \
+  --libdir=/usr/lib64 \
+  --localstatedir=/var \
+  --mandir=/usr/man \
+  --sysconfdir=/etc \
+  --build=$ARCH-$DISTRO-linux --host=$ARCH-$DISTRO-linux || exit 1
 
 # Build...
 make -j12 || exit 1
 # Install...
-make DESTDIR=$PKG install
+make DESTDIR=$PKG install || exit 1
 
-# Prepare package..
-#mkdir -p $PKG/usr/lib
-#mv $PKG/usr/share/pkgconfig $PKG/usr/lib
+# Prepare package
 
-( cd $PKG
-  find . | xargs file | grep "executable" | grep ELF | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
-  find . | xargs file | grep "shared object" | grep ELF | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null
-)
+( cd $PKG && pkghelpers_fixup )
 
-if [ -d $PKG/usr/man ]; then
-  ( cd $PKG/usr/man
-    find . -type f -exec gzip -9 {} \;
-    for i in $(find . -type l) ; do ln -s $(readlink $i).gz $i.gz ; rm $i ; done
-  )
+if [ ! -d $PKG/usr/doc/$PRGNAM-$VERSION ] ; then
+  mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
 fi
-
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+# CHANGE THIS ON A PER-PACKAGE BASIS!  AND DELETE THIS LINE, IDIOT!
 cp -a AUTHORS COPYING ChangeLog INSTALL NEWS README VERSION \
   $PKG/usr/doc/$PRGNAM-$VERSION
 
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
-cat $CWD/doinst.sh > $PKG/install/doinst.sh
+if [ -f $CWD/doinst.sh ] ; then
+  cat $CWD/doinst.sh > $PKG/install/doinst.sh
+fi
 
 # Make the package...
 cd $PKG
-pkghelpers_fixup
 pkghelpers_makepkg
