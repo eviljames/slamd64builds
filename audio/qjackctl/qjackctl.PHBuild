@@ -25,8 +25,9 @@ URI=http://downloads.sourceforge.net/qjackctl/qjackctl-0.3.4.tar.gz
 . /etc/pkghelpers
 pkghelpers_env
 
-# Is there a QTDIR?  If not, set it to something sane...
-QTDIR=${QTDIR:-/usr/lib64/qt-4.4.3}
+# Is there a QTDIR?  If not, set it to something sane.  This should point
+# to QT4.
+QTDIR=${QTDIR:-/usr/lib64/qt4}
 
 # Download the package if not available
 if [ ! -f $PKGNAM-$VERSION.tar.gz ] ; then
