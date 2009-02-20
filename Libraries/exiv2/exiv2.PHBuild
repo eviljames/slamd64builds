@@ -15,50 +15,61 @@
 #ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 #OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+
 PRGNAM=exiv2
 VERSION=0.17.1
-BUILD=1jp
+BUILD=2jp
 URI=http://www.exiv2.org/exiv2-0.17.1.tar.gz
 
+# Set up build environment
 . /etc/pkghelpers
 pkghelpers_env
 
-# Download the package if not available.
-if [ ! -f $PKGNAM-$VERSION.tar.gz ] ; then 
-  wget $URI 
+# Download the package if not available
+if [ ! -f $PKGNAM-$VERSION.tar.gz ] ; then
+  wget -c $URI || exit 1
 fi
 
 rm -rf $PKG
 mkdir -p $PKG
 cd $TMP
 rm -rf $PKGNAM-$VERSION
-tar xzvf $CWD/$PKGNAM-$VERSION.tar.gz
+tar xzvf $CWD/$PKGNAM-$VERSION.tar.gz || exit 1
 
 cd $PKGNAM-$VERSION
 pkghelpers_permissions
 
 # Configure...
-CFLAGS="$SLKCFLAGS" ./configure --prefix=/usr --libdir=/usr/lib64 \
-  --sysconfdir=/etc --localstatedir=/var --mandir=/usr/man --program-prefix="" \
+LDFLAGS="-L/lib64 -L/usr/lib64" \
+CFLAGS="$SLKCFLAGS" \
+./configure --prefix=/usr \
+  --libdir=/usr/lib64 \
+  --localstatedir=/var \
+  --mandir=/usr/man \
+  --sysconfdir=/etc \
   --enable-static=no \
-  --program-suffix="" --with-docdir=/usr/doc/$PRGNAM-$VERSION \
-  --build=$ARCH-slackware-linux --host=$ARCH-slackware-linux
+  --build=$ARCH-$DISTRO-linux --host=$ARCH-$DISTRO-linux || exit 1
 
 # Build...
 make -j12 || exit 1
 # Install...
-make DESTDIR=$PKG install
+make DESTDIR=$PKG install || exit 1
 
-# Prepare package..
+# Prepare package
 
-pkghelpers_fixup
+( cd $PKG && pkghelpers_fixup )
 
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+if [ ! -d $PKG/usr/doc/$PRGNAM-$VERSION ] ; then
+  mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+fi
 cp -a AUTHORS COPYING ChangeLog INSTALL NEWS README VERSION \
   $PKG/usr/doc/$PRGNAM-$VERSION
 
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
+if [ -f $CWD/doinst.sh ] ; then
+  cat $CWD/doinst.sh > $PKG/install/doinst.sh
+fi
 
 # Make the package...
 cd $PKG
