@@ -1,2 +1,2 @@
-DO NOT USE -- THIS PACKAGE IS A FAILURE!
-A NEW VERSION IS FORTHCOMING
+This is the new version of the package.  Learned from SBo that it should be built more than once, in order to accommodate floating point and long-double.
+

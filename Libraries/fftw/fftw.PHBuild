@@ -1,5 +1,6 @@
 #!/bin/sh
-# Slamd64 build script for fftw using pkg hlpers
+
+# Slamd64 build script template using pkg hlpers
 #Copyright (c) 2009, eviljames <storgeek@gmail.com>
 #
 #Permission to use, copy, modify, and/or distribute this software for any
@@ -17,8 +18,9 @@
 
 PRGNAM=fftw
 VERSION=3.2.1
-BUILD=1jp
+BUILD=2jp
 URI=http://www.fftw.org/fftw-3.2.1.tar.gz
+
 
 # Set up build environment
 . /etc/pkghelpers
@@ -26,38 +28,81 @@ pkghelpers_env
 
 # Download the package if not available
 if [ ! -f $PKGNAM-$VERSION.tar.gz ] ; then
-  wget -c $URI
+  wget -c $URI || exit 1
 fi
 
 rm -rf $PKG
 mkdir -p $PKG
 cd $TMP
 rm -rf $PKGNAM-$VERSION
-tar xzvf $CWD/$PKGNAM-$VERSION.tar.gz
+tar xzvf $CWD/$PKGNAM-$VERSION.tar.gz || exit 1
 
 cd $PKGNAM-$VERSION
 pkghelpers_permissions
 
 # Configure...
-LDFLAGS="-L/usr/lib64 -L/lib64" \
-CFLAGS="$SLKCFLAGS" ./configure --prefix=/usr --sysconfdir=/etc \
+LDFLAGS="-L/lib64 -L/usr/lib64" \
+CFLAGS="$SLKCFLAGS" \
+./configure --prefix=/usr \
   --libdir=/usr/lib64 \
-  --localstatedir=/var --mandir=/usr/man --program-prefix="" \
-  --program-suffix="" --with-docdir=/usr/doc/$PRGNAM-$VERSION \
-  --build=$ARCH-slackware-linux --host=$ARCH-slackware-linux
+  --localstatedir=/var \
+  --mandir=/usr/man \
+  --sysconfdir=/etc \
+  --docdir=/usr/doc/fftw-$VERSION \
+  --enable-threads \
+  --enable-shared \
+  --disable-static \
+  --build=$ARCH-$DISTRO-linux --host=$ARCH-$DISTRO-linux || exit 1
 
 # Build...
 make -j12 || exit 1
 # Install...
-make DESTDIR=$PKG install
+make DESTDIR=$PKG install || exit 1
 
-# Prepare package..
+# SlackBuilds.org script mentions reasons why to configure/build 3 times
+# Essentially, we need floating point and long-double
 
-pkghelpers_fixup
+LDFLAGS="-L/lib64 -L/usr/lib64" \
+CFLAGS="$SLKCFLAGS" \
+./configure --prefix=/usr \
+  --libdir=/usr/lib64 \
+  --localstatedir=/var \
+  --mandir=/usr/man \
+  --sysconfdir=/etc \
+  --docdir=/usr/doc/fftw-$VERSION \
+  --enable-threads \
+  --enable-shared \
+  --disable-static \
+  --enable-float \
+  --build=$ARCH-$DISTRO-linux --host=$ARCH-$DISTRO-linux || exit 1
+make -j12 || exit 1
+make DESTDIR=$PKG install || exit 1
 
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
-cp -a AUTHORS COPYING ChangeLog INSTALL NEWS README VERSION \
-  $PKG/usr/doc$PRGNAM-$VERSION
+LDFLAGS="-L/lib64 -L/usr/lib64" \
+CFLAGS="$SLKCFLAGS" \
+./configure --prefix=/usr \
+  --libdir=/usr/lib64 \
+  --localstatedir=/var \
+  --mandir=/usr/man \
+  --sysconfdir=/etc \
+  --docdir=/usr/doc/fftw-$VERSION \
+  --enable-threads \
+  --enable-shared \
+  --disable-static \
+  --enable-long-double \
+  --build=$ARCH-$DISTRO-linux --host=$ARCH-$DISTRO-linux || exit 1
+make -j12 || exit 1
+make DESTDIR=$PKG install || exit 1
+
+# Prepare package
+
+( cd $PKG && pkghelpers_fixup )
+
+if [ ! -d $PKG/usr/doc/$PRGNAM-$VERSION ] ; then
+  mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+fi
+cp -a AUTHORS CONVENTIONS COPYING COPYRIGHT ChangeLog INSTALL NEWS README TODO \
+  $PKG/usr/doc/$PRGNAM-$VERSION
 
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
