@@ -1,0 +1,98 @@
+#!/bin/sh
+
+# Slamd64 build script for qt4 using pkg hlpers
+#Copyright (c) 2009, eviljames <storgeek@gmail.com>
+#
+#Permission to use, copy, modify, and/or distribute this software for any
+#purpose with or without fee is hereby granted, provided that the above
+#copyright notice and this permission notice appear in all copies.
+#
+#THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+#WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF 
+#MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+#ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+#WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+#ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+#OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+
+PRGNAM=qt4
+VERSION=4.4.3
+BUILD=1jp
+URI=ftp://ftp.trolltech.no/qt/source/qt-x11-opensource-src-4.4.3.tar.bz2
+
+# Set up build environment
+. /etc/pkghelpers
+pkghelpers_env
+
+# Download the package if not available
+if [ ! -f qt-x11-opensource-src-$VERSION.tar.bz2 ] ; then
+  wget -c $URI || exit 1
+fi
+
+rm -rf $PKG
+mkdir -p $PKG
+cd $TMP
+rm -rf $PKGNAM-$VERSION
+tar xjvf $CWD/qt-x11-opensource-src-$VERSION.tar.bz2 || exit 1
+
+cd qt-x11-opensource-src-$VERSION
+pkghelpers_permissions
+
+# Configure...
+LDFLAGS="-L/lib64 -L/usr/lib64" \
+CFLAGS="$SLKCFLAGS" \
+CXXFLAGS="$SLKCFLAGS" \
+echo "yes" | ./configure \
+  -prefix /usr/lib64/qt-$VERSION \
+  -no-separate-debug-info \
+  -nomake examples \
+  -nomake demos || exit 1
+
+# Build...
+make -j12 || exit 1
+# Install...
+make INSTALL_ROOT=$PKG install || exit 1
+
+# Prepare package, some ideas from SBo
+
+( cd $PKG && pkghelpers_fixup )
+( cd $PKG/usr/lib64 ; ln -sf qt-$VERSION qt4 )
+
+mkdir -p $PKG/usr/bin
+( cd $PKG/usr/bin
+  for file in assistant assistant_adp designer linguist lrelease lupdate \
+    moc pixeltool qcollectiongenerator qdbus qdbuscpp2xml qdbusviewer \
+    qdbusxml2cpp qhelpconverter qhelpgenerator qmake qt3to4 qtconfig rcc \
+    uic uic3 xmlpatterns ;
+  do
+    ln -sf /usr/lib64/qt-$VERSION/bin/$file ${file}-qt4 ;
+  done
+)
+
+mkdir -p $PKG/usr/lib64/pkgconfig
+( cd $PKG/usr/lib64/pkgconfig
+  for file in Qt3Support.pc QtAssistantClient.pc QtCore.pc QtDbus.pc \
+    QtGui.pc QtNetwork.pc QtOpenGL.pc QtScript.pc QtSql.pc QtSvg.pc \
+    QtTest.pc QtUiTools.pc QtXml.pc ;
+  do
+    ln -sf /usr/lib64/qt-$VERSION/lib/pkgconfig/$file . ;
+  done
+)
+
+if [ ! -d $PKG/usr/doc/$PRGNAM-$VERSION ] ; then
+  mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+fi
+cp -a GPL_EXCEPTION.TXT GPL_EXCEPTION_ADDENDUM.TXT INSTALL LICENSE.GPL* \
+  OPENSOURCE-NOTICE.TXT README \
+  $PKG/usr/doc/$PRGNAM-$VERSION
+
+mkdir -p $PKG/install
+cat $CWD/slack-desc > $PKG/install/slack-desc
+if [ -f $CWD/doinst.sh ] ; then
+  cat $CWD/doinst.sh > $PKG/install/doinst.sh
+fi
+
+# Make the package...
+cd $PKG
+pkghelpers_makepkg
