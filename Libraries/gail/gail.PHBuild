@@ -1,5 +1,6 @@
 #!/bin/sh
-# Slamd64 build script for liblrdf using pkg hlpers
+
+# Slamd64 build script for gail using pkg hlpers
 #Copyright (c) 2009, eviljames <storgeek@gmail.com>
 #
 #Permission to use, copy, modify, and/or distribute this software for any
@@ -17,7 +18,7 @@
 
 PRGNAM=gail
 VERSION=1.22.3
-BUILD=1jp
+BUILD=2jp
 URI=http://ftp.gnome.org/pub/GNOME/sources/gail/1.22/gail-1.22.3.tar.bz2
 
 # Set up build environment
@@ -26,38 +27,43 @@ pkghelpers_env
 
 # Download the package if not available
 if [ ! -f $PKGNAM-$VERSION.tar.bz2 ] ; then
-  wget -c $URI
+  wget -c $URI || exit 1
 fi
 
 rm -rf $PKG
 mkdir -p $PKG
 cd $TMP
 rm -rf $PKGNAM-$VERSION
-tar xjvf $CWD/$PKGNAM-$VERSION.tar.bz2
+tar xjvf $CWD/$PKGNAM-$VERSION.tar.bz2 || exit 1
 
 cd $PKGNAM-$VERSION
 pkghelpers_permissions
 
 # Configure...
-LDFLAGS="-L/usr/lib64 -L/lib64" \
-CFLAGS="$SLKCFLAGS" ./configure --prefix=/usr --sysconfdir=/etc \
+LDFLAGS="-L/lib64 -L/usr/lib64" \
+CFLAGS="$SLKCFLAGS" \
+./configure --prefix=/usr \
   --libdir=/usr/lib64 \
-  --localstatedir=/var --mandir=/usr/man --program-prefix="" \
-  --program-suffix="" --with-docdir=/usr/doc/$PRGNAM-$VERSION \
-  --build=$ARCH-slackware-linux --host=$ARCH-slackware-linux
+  --localstatedir=/var \
+  --mandir=/usr/man \
+  --with-docdir=/usr/doc/$PRGNAM-$VERSION \
+  --sysconfdir=/etc \
+  --build=$ARCH-$DISTRO-linux --host=$ARCH-$DISTRO-linux || exit 1
 
 # Build...
 make -j12 || exit 1
 # Install...
-make DESTDIR=$PKG install
+make DESTDIR=$PKG install || exit 1
 
-# Prepare package..
+# Prepare package
 
-pkghelpers_fixup
+( cd $PKG && pkghelpers_fixup )
 
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+if [ ! -d $PKG/usr/doc/$PRGNAM-$VERSION ] ; then
+  mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+fi
 cp -a AUTHORS COPYING ChangeLog INSTALL NEWS README VERSION \
-  $PKG/usr/doc$PRGNAM-$VERSION
+  $PKG/usr/doc/$PRGNAM-$VERSION
 
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
