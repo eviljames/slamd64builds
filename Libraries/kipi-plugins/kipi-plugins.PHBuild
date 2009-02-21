@@ -47,6 +47,7 @@ CFLAGS="$SLKCFLAGS" \
   --libdir=/usr/lib64 \
   --localstatedir=/var \
   --mandir=/usr/man \
+  --docdir=/usr/doc/$PRGNAM-$VERSION \
   --sysconfdir=/etc \
   --build=$ARCH-$DISTRO-linux --host=$ARCH-$DISTRO-linux || exit 1
 
