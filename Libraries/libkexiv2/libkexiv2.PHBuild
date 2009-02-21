@@ -40,7 +40,7 @@ cd $PKGNAM-$VERSION
 pkghelpers_permissions
 
 # Configure... May need the next line
-#UIC_PATH=/usr/lib64/qt/bin/uic
+#UIC_PATH=/usr/lib64/qt4/bin/uic
 LDFLAGS="-L/lib64 -L/usr/lib64" \
 CFLAGS="$SLKCFLAGS" \
 ./configure --prefix=/usr \
