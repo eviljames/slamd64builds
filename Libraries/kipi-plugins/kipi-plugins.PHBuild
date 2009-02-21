@@ -63,8 +63,8 @@ make DESTDIR=$PKG install || exit 1
 if [ ! -d $PKG/usr/doc/$PRGNAM-$VERSION ] ; then
   mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
 fi
-# CHANGE THIS ON A PER-PACKAGE BASIS!  AND DELETE THIS LINE, IDIOT!
-cp -a AUTHORS COPYING ChangeLog INSTALL NEWS README VERSION \
+cp -a AUTHORS COPYING ChangeLog INSTALL NEWS PACKAGING README \
+  RELEASE.rev TODO \
   $PKG/usr/doc/$PRGNAM-$VERSION
 
 mkdir -p $PKG/install
