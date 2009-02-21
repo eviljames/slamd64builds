@@ -15,49 +15,64 @@
 #ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 #OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+
 PRGNAM=digikam
 VERSION=0.9.4
-BUILD=1jp
+BUILD=2jp
 URI=http://downloads.sourceforge.net/digikam/digikam-0.9.4.tar.bz2
 
+# Set up build environment
 . /etc/pkghelpers
 pkghelpers_env
 
-if [ ! -f $PRGNAM-$VERSION.tar.bz2 ] ; then
-  wget -c $URI
+# Download the package if not available
+if [ ! -f $PKGNAM-$VERSION.tar.?z* ] ; then
+  wget -c $URI || exit 1
 fi
 
 rm -rf $PKG
 mkdir -p $PKG
 cd $TMP
 rm -rf $PKGNAM-$VERSION
-tar xjvf $CWD/$PKGNAM-$VERSION.tar.bz2
+tar xvf $CWD/$PKGNAM-$VERSION.tar.?z* || exit 1
 
 cd $PKGNAM-$VERSION
-chown -Rv root:root .
+pkghelpers_permissions
 
 # Configure...
-UIC_PATH=/usr/lib64/qt/bin/uic \
-CFLAGS="$SLKCFLAGS" ./configure --prefix=/usr --libdir=/usr/lib64 \
-  --sysconfdir=/etc --localstatedir=/var --mandir=/usr/man --program-prefix="" \
+LDFLAGS="-L/lib64 -L/usr/lib64" \
+CFLAGS="$SLKCFLAGS" \
+CXXFLAGS="$SLKCFLAGS" \
+./configure --prefix=/usr \
+  --libdir=/usr/lib64 \
+  --localstatedir=/var \
+  --mandir=/usr/man \
+  --sysconfdir=/etc \
   --without-included-sqlite3 \
-  --program-suffix="" --with-docdir=/usr/doc/$PRGNAM-$VERSION \
-  --build=$ARCH-slackware-linux --host=$ARCH-slackware-linux
+  --build=$ARCH-$DISTRO-linux --host=$ARCH-$DISTRO-linux || exit 1
 
 # Build...
 make -j12 || exit 1
 # Install...
-make DESTDIR=$PKG install
+make DESTDIR=$PKG install || exit 1
 
-# Prepare package..
-pkghlpers_fixup
+# Prepare package
 
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
-cp -a AUTHORS COPYING ChangeLog INSTALL NEWS README VERSION \
+( cd $PKG && pkghelpers_fixup )
+
+if [ ! -d $PKG/usr/doc/$PRGNAM-$VERSION ] ; then
+  mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+fi
+
+cp -a AUTHORS COPYING ChangeLog HACKING INSTALL NEWS README \
+  RELEASE.rev TODO \
   $PKG/usr/doc/$PRGNAM-$VERSION
 
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
+if [ -f $CWD/doinst.sh ] ; then
+  cat $CWD/doinst.sh > $PKG/install/doinst.sh
+fi
 
 # Make the package...
 cd $PKG
