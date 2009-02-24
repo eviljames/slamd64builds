@@ -16,18 +16,17 @@
 #OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
-PRGNAM=fftw
-VERSION=3.2.1
-BUILD=2jp
-URI=http://www.fftw.org/fftw-3.2.1.tar.gz
-
+PRGNAM=tovid
+VERSION=0.31
+BUILD=1jp
+URI=http://tovid.googlecode.com/files/tovid-0.31.tar.gz
 
 # Set up build environment
 . /etc/pkghelpers
 pkghelpers_env
 
 # Download the package if not available
-if [ ! -f $PKGNAM-$VERSION.tar.gz ] ; then
+if [ ! -f $PKGNAM-$VERSION.tar.?z* ] ; then
   wget -c $URI || exit 1
 fi
 
@@ -35,7 +34,7 @@ rm -rf $PKG
 mkdir -p $PKG
 cd $TMP
 rm -rf $PKGNAM-$VERSION
-tar xzvf $CWD/$PKGNAM-$VERSION.tar.gz || exit 1
+tar xvf $CWD/$PKGNAM-$VERSION.tar.?z* || exit 1
 
 cd $PKGNAM-$VERSION
 pkghelpers_permissions
@@ -43,58 +42,16 @@ pkghelpers_permissions
 # Configure...
 LDFLAGS="-L/lib64 -L/usr/lib64" \
 CFLAGS="$SLKCFLAGS" \
-CXXFLAGS="$SLKCFLAGS" \
 ./configure --prefix=/usr \
   --libdir=/usr/lib64 \
   --localstatedir=/var \
   --mandir=/usr/man \
   --sysconfdir=/etc \
-  --docdir=/usr/doc/fftw-$VERSION \
-  --enable-threads \
-  --enable-shared \
-  --disable-static \
   --build=$ARCH-$DISTRO-linux --host=$ARCH-$DISTRO-linux || exit 1
 
 # Build...
 make -j12 || exit 1
 # Install...
-make DESTDIR=$PKG install || exit 1
-
-# SlackBuilds.org script mentions reasons why to configure/build 3 times
-# Essentially, we need floating point and long-double
-
-LDFLAGS="-L/lib64 -L/usr/lib64" \
-CFLAGS="$SLKCFLAGS" \
-CXXFLAGS="$SLKCFLAGS" \
-./configure --prefix=/usr \
-  --libdir=/usr/lib64 \
-  --localstatedir=/var \
-  --mandir=/usr/man \
-  --sysconfdir=/etc \
-  --docdir=/usr/doc/fftw-$VERSION \
-  --enable-threads \
-  --enable-shared \
-  --disable-static \
-  --enable-float \
-  --build=$ARCH-$DISTRO-linux --host=$ARCH-$DISTRO-linux || exit 1
-make -j12 || exit 1
-make DESTDIR=$PKG install || exit 1
-
-LDFLAGS="-L/lib64 -L/usr/lib64" \
-CFLAGS="$SLKCFLAGS" \
-CXXFLAGS="$SLKCFLAGS" \
-./configure --prefix=/usr \
-  --libdir=/usr/lib64 \
-  --localstatedir=/var \
-  --mandir=/usr/man \
-  --sysconfdir=/etc \
-  --docdir=/usr/doc/fftw-$VERSION \
-  --enable-threads \
-  --enable-shared \
-  --disable-static \
-  --enable-long-double \
-  --build=$ARCH-$DISTRO-linux --host=$ARCH-$DISTRO-linux || exit 1
-make -j12 || exit 1
 make DESTDIR=$PKG install || exit 1
 
 # Prepare package
@@ -104,7 +61,8 @@ make DESTDIR=$PKG install || exit 1
 if [ ! -d $PKG/usr/doc/$PRGNAM-$VERSION ] ; then
   mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
 fi
-cp -a AUTHORS CONVENTIONS COPYING COPYRIGHT ChangeLog INSTALL NEWS README TODO \
+# CHANGE THIS ON A PER-PACKAGE BASIS!  AND DELETE THIS LINE, IDIOT!
+cp -a AUTHORS COPYING ChangeLog INSTALL NEWS SENSE \
   $PKG/usr/doc/$PRGNAM-$VERSION
 
 mkdir -p $PKG/install
