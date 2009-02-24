@@ -3,7 +3,7 @@ This is where eviljames in #slackware/#slamd64 on freenode puts his custom packs
 Right now, none of these packages are any good.  I'll change this readme when I have updated
 each script to meet the template that I have since made.
 
-In short, EXPERIMENTAL!
+In short, EXPERIMENTAL!  Particularly kaffeine, as it was built against a tainted system.  Will have to try that in a vm shortly, this will be updated to reflect that when it is done.
 
 You know the drill.
 
