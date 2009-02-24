@@ -1,5 +1,6 @@
 #!/bin/sh
-# Slamd64 build script for compiz-fusion-plugins-extra using pkg hlpers
+
+# Slamd64 build script template using pkg hlpers
 #Copyright (c) 2009, eviljames <storgeek@gmail.com>
 #
 #Permission to use, copy, modify, and/or distribute this software for any
@@ -14,9 +15,10 @@
 #ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 #OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+
 PRGNAM=compiz-fusion-plugins-extra
 VERSION=0.7.8
-BUILD=2jp
+BUILD=3jp
 URI=http://releases.compiz-fusion.org/0.7.8/compiz-fusion-plugins-extra-0.7.8.tar.bz2
 
 # Set up build environment
@@ -24,39 +26,44 @@ URI=http://releases.compiz-fusion.org/0.7.8/compiz-fusion-plugins-extra-0.7.8.ta
 pkghelpers_env
 
 # Download the package if not available
-if [ ! -f $PKGNAM-$VERSION.tar.bz2 ] ; then
-  wget -c $URI
+if [ ! -f $PKGNAM-$VERSION.tar.?z* ] ; then
+  wget -c $URI || exit 1
 fi
 
 rm -rf $PKG
 mkdir -p $PKG
 cd $TMP
 rm -rf $PKGNAM-$VERSION
-tar xjvf $CWD/$PKGNAM-$VERSION.tar.bz2
+tar xvf $CWD/$PKGNAM-$VERSION.tar.?z* || exit 1
 
 cd $PKGNAM-$VERSION
 pkghelpers_permissions
 
 # Configure...
-LDFLAGS="-L/usr/lib64" \
-CFLAGS="$SLKCFLAGS" ./configure --prefix=/usr --sysconfdir=/etc \
+LDFLAGS="-L/lib64 -L/usr/lib64" \
+CFLAGS="$SLKCFLAGS" \
+./configure --prefix=/usr \
   --libdir=/usr/lib64 \
-  --localstatedir=/var --mandir=/usr/man --program-prefix="" \
-  --program-suffix="" --with-docdir=/usr/doc/$PRGNAM-$VERSION \
-  --build=$ARCH-slackware-linux --host=$ARCH-slackware-linux
+  --localstatedir=/var \
+  --mandir=/usr/man \
+  --sysconfdir=/etc \
+  --build=$ARCH-$DISTRO-linux --host=$ARCH-$DISTRO-linux || exit 1
 
 # Build...
 make -j12 || exit 1
 # Install...
-make DESTDIR=$PKG install
+make DESTDIR=$PKG install || exit 1
 
-# Prepare package..
+# Prepare package
 
-pkghelpers_fixup
+( cd $PKG && pkghelpers_fixup )
 
-mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+if [ ! -d $PKG/usr/doc/$PRGNAM-$VERSION ] ; then
+  mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+fi
+# CHANGE THIS ON A PER-PACKAGE BASIS!  AND DELETE THIS LINE, IDIOT!
 cp -a AUTHORS COPYING ChangeLog INSTALL NEWS README VERSION \
-  $PKG/usr/doc$PRGNAM-$VERSION
+  $PKG/usr/doc/$PRGNAM-$VERSION
 
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
