@@ -5,6 +5,43 @@ each script to meet the template that I have since made.
 
 In short, EXPERIMENTAL!  Particularly kaffeine, as it was built against a tainted system.  Will have to try that in a vm shortly, this will be updated to reflect that when it is done.
 
+
+So, what is and is no longer really experimental:
+Stuff that I have reasonably well tested, along with its dependency tree:
+digiKam
+|- jasper
+ - libkdcraw
+ - libkexiv2
+   | - exiv2
+ - kipi-plugins
+   | - libkipi
+
+qjackctl
+| - jack-audio-connection-kit (from SBo)
+  - qt4
+
+qt4-4.4.3
+
+liblrdf
+| - ladspa_sdk
+  - raptor
+
+libgnomecanvas
+| - gail
+
+libsamplerate
+| - libsndfile (from builds.slamd64.org)
+  - fftw
+
+liblo
+libmp4v2
+mjpegtools
+
+The following are EXPERIMENTAL:
+all of compiz-fusion/
+Multimedia/kaffeine (particularly experimental, and forgotten dependency chain)
+
+
 You know the drill.
 
 You should be able to simply download script / slack-desc file and run it at the command line.  These scripts will download the source and build from it.
