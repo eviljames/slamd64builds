@@ -1,0 +1,15 @@
+These packages will be stabilized over the course of the next few days.
+
+The recommended build order is:
+compiz-bcop
+libcompizconfig
+compizconfig-python
+compiz-fusion-plugins-main
+compiz-fusion-plugins-extra
+compiz-fusion-plugins-unsupported
+ccsm
+emerald
+
+Build scripts will be forthcoming for:
+compizconfig-backend-kconfig
+simple-ccsm
