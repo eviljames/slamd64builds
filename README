@@ -7,6 +7,4 @@ In short, EXPERIMENTAL!
 
 You know the drill.
 
-Kaffeine right now is particularly bad because it is built on a tainted system, so I will have to backtrack and sort out deps later.
-
 You should be able to simply download script / slack-desc file and run it at the command line.  These scripts will download the source and build from it.

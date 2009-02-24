@@ -43,7 +43,6 @@ pkghelpers_permissions
 # Configure...
 LDFLAGS="-L/lib64 -L/usr/lib64" \
 CFLAGS="$SLKCFLAGS" \
-CXXFLAGS="$SLKCFLAGS" \
 ./configure --prefix=/usr \
   --libdir=/usr/lib64 \
   --localstatedir=/var \
@@ -65,7 +64,6 @@ make DESTDIR=$PKG install || exit 1
 
 LDFLAGS="-L/lib64 -L/usr/lib64" \
 CFLAGS="$SLKCFLAGS" \
-CXXFLAGS="$SLKCFLAGS" \
 ./configure --prefix=/usr \
   --libdir=/usr/lib64 \
   --localstatedir=/var \
@@ -82,7 +80,6 @@ make DESTDIR=$PKG install || exit 1
 
 LDFLAGS="-L/lib64 -L/usr/lib64" \
 CFLAGS="$SLKCFLAGS" \
-CXXFLAGS="$SLKCFLAGS" \
 ./configure --prefix=/usr \
   --libdir=/usr/lib64 \
   --localstatedir=/var \
