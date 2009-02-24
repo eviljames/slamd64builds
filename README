@@ -37,8 +37,10 @@ liblo
 libmp4v2
 mjpegtools
 
+compiz-fusion
+
 The following are EXPERIMENTAL:
-all of compiz-fusion/
+compiz-fusion/avant-window-navigator
 Multimedia/kaffeine (particularly experimental, and forgotten dependency chain)
 
 
